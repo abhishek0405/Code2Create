@@ -16,12 +16,12 @@ import pathlib
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-# from ML import pipelines
-# from ML import Question_Answer
-# from ML import Keyword_Generator
-# from ML import  FormulaExtract
-# from ML import ocr
-# from ML import pdf_gen
+from ML import pipelines
+from ML import Question_Answer
+from ML import Keyword_Generator
+from ML import  FormulaExtract
+from ML import ocr
+from ML import pdf_gen
 
 app=Flask(__name__)
 app.config['SECRET_KEY']='346c5081b20bc391b121a0c3832dbfd7'
@@ -114,54 +114,46 @@ def login():
     return render_template('signin.html', form=form)
 
 
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
-
-
-
-
-# @app.route('/home', methods=['GET', 'POST'])
-# @login_required
-# def home():
-#     if request.method == 'POST':
-#         file1 = request.files['file1']
+@app.route('/home', methods=['GET', 'POST'])
+@login_required
+def home():
+    if request.method == 'POST':
+        file1 = request.files['file1']
         
-#         my_result = ''
-#         if file1:
-#             filename1 = file1.filename
-#             target = os.path.join(APP_ROOT, 'images\\')
-#             print(target)
+        my_result = ''
+        if file1:
+            filename1 = file1.filename
+            target = os.path.join(APP_ROOT, 'images\\')
+            print(target)
         
-#             if not os.path.isdir(target):
-#                 os.mkdir(target)
-#             directory_current = pathlib.Path.cwd()
-#             img_fol = (os.path.join(directory_current, "images/"))
-#             if len(os.listdir(img_fol) ) != 0:
-#                 os.remove(os.path.join(directory_current, "images/test.png"))
-#             destination = "\\".join([target, filename1])
-#             file1.save(destination)
-#             d= os.path.join(target, "test.png")
-#             os.rename(destination, d)
-#             my_result = ocr.readText()
+            if not os.path.isdir(target):
+                os.mkdir(target)
+            directory_current = pathlib.Path.cwd()
+            img_fol = (os.path.join(directory_current, "images/"))
+            if len(os.listdir(img_fol) ) != 0:
+                os.remove(os.path.join(directory_current, "images/test.png"))
+            destination = "\\".join([target, filename1])
+            file1.save(destination)
+            d= os.path.join(target, "test.png")
+            os.rename(destination, d)
+            my_result = ocr.readText()
 
-#             return render_template('home.html', ocr_text=my_result)
+            return render_template('home.html', ocr_text=my_result)
 
-#         else:
-#             text = request.form['text']
-#             scientific_formulas = FormulaExtract.GetFormula(text)
-#             chemical_formula = FormulaExtract.chemData(text)
-#             keywords=[]
-#             keywords = Keyword_Generator.get_hotwords(text)
-#             one_word_ans=Question_Answer.GetQuestionAnswer(text)
-#             short_answers = Question_Answer.short_question_generation(text)
-#             summary = FormulaExtract.summary(text)
-#             pdf_gen.generate_pdf(summary, scientific_formulas, chemical_formula, one_word_ans, keywords)
-#             return render_template('results.html',one_word_ans=one_word_ans,short_answers = short_answers,keywords=keywords,chemical_formula=chemical_formula,scientific_formulas=scientific_formulas, summary=summary)
-#             #return render_template('results.html',one_word_ans='',short_answers = '',keywords='',chemical_formula='',scientific_formulas='', summary=text)
-#     else:
-#         return render_template('home.html')
+        else:
+            text = request.form['text']
+            scientific_formulas = FormulaExtract.GetFormula(text)
+            chemical_formula = FormulaExtract.chemData(text)
+            keywords=[]
+            keywords = Keyword_Generator.get_hotwords(text)
+            one_word_ans=Question_Answer.GetQuestionAnswer(text)
+            short_answers = Question_Answer.short_question_generation(text)
+            summary = FormulaExtract.summary(text)
+            #pdf_gen.generate_pdf(summary, scientific_formulas, chemical_formula, one_word_ans, keywords)
+            return render_template('results.html',one_word_ans=one_word_ans,short_answers = short_answers,keywords=keywords,chemical_formula=chemical_formula,scientific_formulas=scientific_formulas, summary=summary)
+            #return render_template('results.html',one_word_ans='',short_answers = '',keywords='',chemical_formula='',scientific_formulas='', summary=text)
+    else:
+        return render_template('home.html')
     
  
 if __name__=='__main__':
