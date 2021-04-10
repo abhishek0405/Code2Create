@@ -231,8 +231,7 @@ class E2EQGPipeline:
     def __call__(self, context: str, **generate_kwargs):
         inputs = self._prepare_inputs_for_e2e_qg(context)
 
-        # TODO: when overrding default_generate_kwargs all other arguments need to be passsed
-        # find a better way to do this
+        
         if not generate_kwargs:
             generate_kwargs = self.default_generate_kwargs
         
@@ -317,62 +316,62 @@ def pipeline(
     use_cuda: Optional[bool] = True,
     **kwargs,
 ):
-    # Retrieve the task
+    
     if task not in SUPPORTED_TASKS:
         raise KeyError("Unknown task {}, available tasks are {}".format(task, list(SUPPORTED_TASKS.keys())))
 
     targeted_task = SUPPORTED_TASKS[task]
     task_class = targeted_task["impl"]
 
-    # Use default model/config/tokenizer for the task if no model is provided
+    
     if model is None:
         model = targeted_task["default"]["model"]
     
-    # Try to infer tokenizer from model or config name (if provided as str)
+    
     if tokenizer is None:
         if isinstance(model, str):
             tokenizer = model
         else:
-            # Impossible to guest what is the right tokenizer here
+            
             raise Exception(
                 "Impossible to guess which tokenizer to use. "
                 "Please provided a PretrainedTokenizer class or a path/identifier to a pretrained tokenizer."
             )
     
-    # Instantiate tokenizer if needed
+    
     if isinstance(tokenizer, (str, tuple)):
         if isinstance(tokenizer, tuple):
-            # For tuple we have (tokenizer name, {kwargs})
+            
             tokenizer = AutoTokenizer.from_pretrained(tokenizer[0], **tokenizer[1])
         else:
             tokenizer = AutoTokenizer.from_pretrained(tokenizer)
     
-    # Instantiate model if needed
+    
     if isinstance(model, str):
         model = AutoModelForSeq2SeqLM.from_pretrained(model)
     
     if task == "question-generation":
         if ans_model is None:
-            # load default ans model
+            
             ans_model = targeted_task["default"]["ans_model"]
             ans_tokenizer = AutoTokenizer.from_pretrained(ans_model)
             ans_model = AutoModelForSeq2SeqLM.from_pretrained(ans_model)
         else:
-            # Try to infer tokenizer from model or config name (if provided as str)
+            
             if ans_tokenizer is None:
                 if isinstance(ans_model, str):
                     ans_tokenizer = ans_model
                 else:
-                    # Impossible to guest what is the right tokenizer here
+                    
                     raise Exception(
                         "Impossible to guess which tokenizer to use. "
                         "Please provided a PretrainedTokenizer class or a path/identifier to a pretrained tokenizer."
                     )
             
-            # Instantiate tokenizer if needed
+            
             if isinstance(ans_tokenizer, (str, tuple)):
                 if isinstance(ans_tokenizer, tuple):
-                    # For tuple we have (tokenizer name, {kwargs})
+                    
                     ans_tokenizer = AutoTokenizer.from_pretrained(ans_tokenizer[0], **ans_tokenizer[1])
                 else:
                     ans_tokenizer = AutoTokenizer.from_pretrained(ans_tokenizer)
